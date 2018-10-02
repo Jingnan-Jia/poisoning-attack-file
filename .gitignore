@@ -1,0 +1,5 @@
+
+#this file is to tell the git which files should be ignored when commit
+
+mymodels/
+
