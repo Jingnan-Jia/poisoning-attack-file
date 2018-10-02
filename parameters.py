@@ -25,7 +25,7 @@ parse.add_argument("--give_up_ratio", default=0.5,
                    help="how much area do you want to give up when extract salliency")
 
 #choose one method
-parse.add_argument("--use_lamda_x0", default=100, 
+parse.add_argument("--use_lamda_x0", default=50, 
                    help="use lamda x0 directly to get perfect model with theta k, passed value is the lamda value")
 parse.add_argument("--use_watermark", default=0, 
                    help="use watermark")
