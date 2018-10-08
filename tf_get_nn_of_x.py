@@ -68,7 +68,7 @@ def get_nns_of_x(x, other_data, ckpt_path_final):
     '''get the similar order (from small to big).
     
     args:
-        x: a single/batch of data. shape: (-1, rows, cols, chns)
+        x: a single data. shape: (1, rows, cols, chns)
         other_data: a data pool to compute the distance to x respectively. shape: (-1, rows, cols, chns)
         ckpt_path_final: where pre-trained model is saved.
     
