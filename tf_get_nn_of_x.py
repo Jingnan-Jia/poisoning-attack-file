@@ -19,6 +19,24 @@ def save_fig(img, img_path):
     
     return True
 
+
+def save_figs(imgs, img_dir):
+    '''save a batch of imgs.
+    Args:
+        imgs: (-1, rows, cols, chns)
+        img_dir: directory.
+    Returns:
+        True if all right
+    '''
+    for i in range(len(imgs)):
+        img_path = img_dir +str(i)+'.png'
+        save_fig(imgs[i], img_path)
+        
+    print('all near neighbors imgs saved at'+img_path)
+    
+    return True
+
+
 def ld_dataset(dataset, relative_path=True):
     '''load dataset.
     There are two ways to choose: relative or absolute.
@@ -57,14 +75,14 @@ def ld_dataset(dataset, relative_path=True):
 
     # unite different shape formates to the same one
     x_train = np.reshape(x_train, (-1 , img_rows, img_cols, img_chns)) #change dataset to (None, 28, 28, 1 ) or (None, 32, 32, 3)
-    x_test = np.reshape(x_test, (-1, img_rows, img_cols, img_chns))
     y_train = np.reshape(y_train, (-1 ,)) # change labels shape to (-1, )
+    x_test = np.reshape(x_test, (-1, img_rows, img_cols, img_chns))
     y_test = np.reshape(y_test, (-1 ,))
 
-    return x_train, x_test, y_train, y_test
+    return x_train, y_train, x_test, y_test
 
 
-def get_nns_of_x(x, other_data, ckpt_path_final):
+def get_nns_of_x(x, other_data, other_labels, ckpt_path_final):
     '''get the similar order (from small to big).
     
     args:
@@ -73,7 +91,9 @@ def get_nns_of_x(x, other_data, ckpt_path_final):
         ckpt_path_final: where pre-trained model is saved.
     
     returns:
-        similarity_order: the order of distance_mat. shape: (len(x), len(other_data))  
+        ordered_nns: sorted neighbors
+        ordered_labels: its labels 
+        nns_idx: index of ordered_data, useful to get the unwhitening data later.
     '''
 
     x_preds = deep_cnn.softmax_preds(x, ckpt_path_final) # compute preds, deep_cnn.softmax_preds could be fed  one data now
@@ -91,36 +111,22 @@ def get_nns_of_x(x, other_data, ckpt_path_final):
     nns_idx = np.argsort(distances)  # argsort every rows
     np.savetxt('similarity_order_X_all_tr_X', nns_idx)
     ordered_nns = other_data[nns_idx]
+    ordered_labels = other_labels[nns_idx]
 
-    return ordered_nns
+    return ordered_nns, ordered_labels, nns_idx
 
 
-def save_nns_fig(x, other_data, ckpt_path_final):
-    '''save the neighbors of x among other_data.
-    Args:
-        x: a single data. 
-        other_data: where the neighbors from.
-        ckpt_path_final: how to evaluate the distance of two data.
-    Returns:
-        True if all right.
-    '''
-    ordered_data = get_nns_of_x(x, other_data, ckpt_path_final)
-    for i in ordered_data:
-        img_path = '../imgs/'+str(i)+'.png'
-        save_fig(i, img_path)
-        
-    print('all near neighbors imgs saved at'+img_path)
-    
-    return True
 def main(args=None):
     ckpt_path = FLAGS.train_dir + '/' + str(FLAGS.dataset) + '_' + 'train_data.ckpt'
     ckpt_path_final = ckpt_path + '-' + str(FLAGS.max_steps - 1)
 
-    x_train, x_test, y_train, y_test = ld_dataset(FLAGS.dataset, relative_path=True)
+    x_train, y_train, x_train, y_test = ld_dataset(FLAGS.dataset, relative_path=True, whitening=False)  # for save imgs
+    x_train_ori, y_train, x_test_ort, y_test = ld_dataset(FLAGS.dataset, relative_path=True, whitening=True) 
     x = x_test[0]
-    other_data = x_test
-    
-    save_nns_fig(x, other_data, ckpt_path_final)
+
+    ordered_data, ordered_labels, nns_idx = get_nns_of_x(x, other_data, other_labels, ckpt_path_final)
+    ordered_data_ori = x_train_ori[nns_idx]
+    save_figs(ordered_data_ori, img_path)
 
         
 if __name__ == '__main__':
