@@ -124,8 +124,12 @@ def main(args=None):
     x_train_ori, y_train, x_test_ort, y_test = ld_dataset(FLAGS.dataset, relative_path=True, whitening=True) 
     x = x_test[0]
 
-    ordered_data, ordered_labels, nns_idx = get_nns_of_x(x, other_data, other_labels, ckpt_path_final)
-    ordered_data_ori = x_train_ori[nns_idx]
+    nb_nns = 100
+    ordered_data, ordered_labels, nns_idx = get_nns_of_x(x,
+                                                         other_data=x_train[:nb_nns],
+                                                         other_labels=y_train[:nb_nns], 
+                                                         ckpt_path_final=ckpt_path_final)
+    ordered_data_ori = x_train_ori[:nb_nns][nns_idx]
     save_figs(ordered_data_ori, img_path)
 
         
