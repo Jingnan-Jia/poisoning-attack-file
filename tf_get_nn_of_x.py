@@ -96,6 +96,14 @@ def get_nns_of_x(x, other_data, ckpt_path_final):
 
 
 def save_nns_fig(x, other_data, ckpt_path_final):
+    '''save the neighbors of x among other_data.
+    Args:
+        x: a single data. 
+        other_data: where the neighbors from.
+        ckpt_path_final: how to evaluate the distance of two data.
+    Returns:
+        True if all right.
+    '''
     ordered_data = get_nns_of_x(x, other_data, ckpt_path_final)
     for i in ordered_data:
         img_path = '../imgs/'+str(i)+'.png'
@@ -107,21 +115,13 @@ def save_nns_fig(x, other_data, ckpt_path_final):
 def main(args=None):
     ckpt_path = FLAGS.train_dir + '/' + str(FLAGS.dataset) + '_' + 'train_data.ckpt'
     ckpt_path_final = ckpt_path + '-' + str(FLAGS.max_steps - 1)
-    
-
 
     x_train, x_test, y_train, y_test = ld_dataset(FLAGS.dataset, relative_path=True)
     x = x_test[0]
     other_data = x_test
-    nns_of_x = get_nns_of_x(x, other_data, ckpt_path_final)
-    print('nns_of_x.shape:',nns_of_x.shape)     
     
-    for i in nns_of_x:
-        a = 0
-        img_path = '../imgs/'+str(i)+'.png'
-        save_fig(i, img_path)
-        a = a + 1
-    print('all imgs saved at'+img_path)
+    save_nns_fig(x, other_data, ckpt_path_final)
+
         
 if __name__ == '__main__':
     main()
