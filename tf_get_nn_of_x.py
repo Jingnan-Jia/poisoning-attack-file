@@ -1,22 +1,23 @@
-
-def save_fig(x, path):
-    '''save fig.
-    I create this function because cv2 always misunderstand the order of color channel from rgb to bgr.
-    another reason is to avoid error when x is 4D like (1, 28, 28, 1)
-    input:
-        x: a figure or a matrix. shape: (-1, rows, cols, chns) or (rows, cols, chns)
-        path: where to save x
-    returns:
-        True if x is saved directly.
+def save_fig(img, img_path):
+    '''save fig using plt.
+    Args:
+        img: a 3D image 
+        img_path: where to save
+    Returns:
+        True if all right.
     '''
-    if x.shape[-1] == 1:
-        x = np.reshape(x, (x.shape[-3], x.shape[-2]))
+    if len(img.shape)==3 and img.shape[-1]==1: # (28, 28, 1) shift to (28, 28)
+        img = np.reshape(img, img.shape[0:2]) 
+    if len(img.shape)==4 and img.shape[0] == 1:  # (1, 28, 28, 1) or (1, 32, 32, 3)
+        img = np.reshape(img, img.shape[1:4])
     plt.figure()
-    plt.imshow(x)
-    plt.savefig(path)
+    plt.imshow(img, cmap='jet')
+    plt.axis('off')
+    plt.savefig(img_path, bbox_inches = 'tight')
+    #cv2.imwrite(img_path, img)
+    plt.close()
     
     return True
-
 
 def ld_dataset(dataset, relative_path=True):
     '''load dataset.
