@@ -140,7 +140,7 @@ def get_data_belong_to(x_train, y_train, target_label):
 def get_bigger_half(mat, saved_pixel_ratio):
     '''get a mat which contains a batch of biggest pixls of mat.
     inputs:
-        mat: shape:(28, 28) or (32, 32, 3) type: float between [0~1]
+        mat: 4D aray, shape:(28, 28, 1) or (32, 32, 3) type: float between [0~1]
         saved_pixel_ratio: how much pixels to save.
     outputs:
         mat: shifted mat.
