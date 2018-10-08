@@ -1,5 +1,29 @@
 
 
+def get_tr_data_watermark(changed_data, changed_labels, x, power=FLAGS.water_power):
+    '''get training data by watermark.
+    Args:
+        changed_data: 
+        changed_labels: labels of changed data.
+        x: watermark
+        power: howe much does watermark add.
+    Returns:
+        changed_data_after: the data after add watermark
+
+    '''
+    print('preparing water print data ....please wait...')
+    changed_data_cp = copy.deepcopy(changed_data)
+    tr_min = changed_data_cp.min()
+    tr_max = changed_data_cp.max()
+    x_powered = x * power
+    
+    changed_data_cp *= (1 - power)
+    changed_data_after = [g + x_powered for g in changed_data_cp ]
+    changed_data_after = np.clip(changed_data_cp, tr_min, tr_max)
+    
+    return changed_data_after
+
+
 def get_data_belong_to(x_train, y_train, target_label):
     '''get the data from x_train which belong to the target label.
     inputs:
